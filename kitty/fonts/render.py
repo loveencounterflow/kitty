@@ -71,7 +71,10 @@ def merge_ranges(a: Range, b: Range, priority_map: Dict[Tuple[int, int], int]) -
     mid_end = min(a_end, b_end)
     if mid_end >= b_start:
         # overlap range
-        mid_range = ((b_start, mid_end), a_val if priority_map[a[0]] >= priority_map[b[0]] else b_val)
+        try:
+            mid_range = ((b_start, mid_end), a_val if priority_map[a[0]] >= priority_map[b[0]] else b_val)
+        except Exception as e:
+            print( f"^22^ e: {e}, a[0]: U+{a[0][0]:02x}-U+{a[0][1]:02x}" )
     # after range
     if mid_end is a_end:
         if b_end > a_end:
@@ -101,10 +104,16 @@ def coalesce_symbol_maps(maps: Dict[Tuple[int, int], str]) -> Dict[Tuple[int, in
     priority_map = {r: i for i, r in enumerate(maps.keys())}
     ranges = tuple((r, maps[r]) for r in sorted(maps))
     ans = [ranges[0]]
-
     for i in range(1, len(ranges)):
+        # try:
         r = ranges[i]
         ans[-1:] = list(merge_ranges(ans[-1], r, priority_map))
+        # except Exception as e:
+        #     print( '^22^', f"e: {e}" )
+        #     print( '^22^', f"r: {r}" )
+        #     raise e
+    print( "^46387563^ terminating for debugging" )
+    import sys; sys.exit( 1 )
     return dict(ans)
 
 
